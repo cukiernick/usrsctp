@@ -1273,6 +1273,10 @@ recv_thread_init(void)
 #endif
 		} else {
 			/* complete setting up the raw SCTP socket */
+			if (setsockopt(SCTP_BASE_VAR(userspace_rawsctp6), SOL_IPV6, IPV6_HDRINCL, (const void *)&on, sizeof(on)) < 0) {
+				SCTPDBG(SCTP_DEBUG_USR, "Can't set IPV6_HDRINCL on socket for SCTP/IPv6 (errno = %d).\n", errno);
+				close(SCTP_BASE_VAR(userspace_rawsctp6));
+			}
 #if defined(IPV6_RECVPKTINFO)
 			if (setsockopt(SCTP_BASE_VAR(userspace_rawsctp6), IPPROTO_IPV6, IPV6_RECVPKTINFO, (const void *)&on, sizeof(on)) < 0) {
 #if defined(_WIN32)

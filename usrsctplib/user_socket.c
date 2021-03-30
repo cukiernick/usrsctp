@@ -3076,8 +3076,10 @@ void sctp_userspace_ip6_output(int *result, struct mbuf *o_pak,
 	  m_adj(m, sizeof(struct ip6_hdr));
 	}
 
-	send_count = 0;
-	for (iovcnt = 0; m != NULL && iovcnt < MAXLEN_MBUF_CHAIN; m = m->m_next, iovcnt++) {
+	send_iovec[0].iov_base = (caddr_t)ip6;
+	send_iovec[0].iov_len = sizeof(struct ip6_hdr);
+	send_count = sizeof(struct ip6_hdr);
+	for (iovcnt = 1; m != NULL && iovcnt < MAXLEN_MBUF_CHAIN; m = m->m_next, iovcnt++) {
 #if !defined(_WIN32)
 		send_iovec[iovcnt].iov_base = (caddr_t)m->m_data;
 		send_iovec[iovcnt].iov_len = SCTP_BUF_LEN(m);
