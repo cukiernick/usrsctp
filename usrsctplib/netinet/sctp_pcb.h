@@ -210,8 +210,8 @@ struct sctp_epinfo {
 	struct mtx ipi_pktlog_mtx;
 	struct mtx wq_addr_mtx;
 #elif defined(SCTP_PROCESS_LEVEL_LOCKS)
-	userland_mutex_t ipi_ep_mtx;
-	userland_mutex_t ipi_addr_mtx;
+	pthread_rwlock_t ipi_ep_mtx;
+	pthread_rwlock_t ipi_addr_mtx;
 	userland_mutex_t ipi_count_mtx;
 	userland_mutex_t ipi_pktlog_mtx;
 	userland_mutex_t wq_addr_mtx;
@@ -312,6 +312,7 @@ struct sctp_base_info {
 	int timer_thread_started;
 #if !defined(_WIN32)
 	pthread_mutexattr_t mtx_attr;
+	pthread_rwlockattr_t rwlock_attr;
 #if defined(INET) || defined(INET6)
 	int userspace_route;
 	userland_thread_t recvthreadroute;
@@ -513,7 +514,7 @@ struct sctp_inpcb {
 	struct mtx inp_rdata_mtx;
 	int32_t refcount;
 #elif defined(SCTP_PROCESS_LEVEL_LOCKS)
-	userland_mutex_t inp_mtx;
+	pthread_rwlock_t inp_mtx;
 	userland_mutex_t inp_create_mtx;
 	userland_mutex_t inp_rdata_mtx;
 	int32_t refcount;
